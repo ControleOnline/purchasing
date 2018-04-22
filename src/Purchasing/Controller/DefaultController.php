@@ -5,7 +5,7 @@ namespace Purchasing\Controller;
 use Sales\Model\ShippingModel;
 use Core\Model\ErrorModel;
 use Core\Helper\Format;
-use Sales\Model\QuoteModel;
+use Carrier\Model\QuoteModel;
 use Sales\Model\OrderModel;
 use Company\Model\CompanyModel;
 use Finance\Model\FinanceModel;
