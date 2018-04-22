@@ -1,0 +1,200 @@
+<div class="row">    
+    <div class="col-xs-12">
+        <div class="card">
+            <div class="card hovercard">
+                <div class="card-background">                    
+                    <img class="profile-img card-bkimg lazy-load" src="<?= $this->order->getClient() && $this->order->getClient()->getImage() ? $this->order->getClient()->getImage()->getUrl() : $this->default_company_logo ?>">                    
+                </div>
+                <div class="useravatar">
+                    <img src="<?= $this->order->getClient() && $this->order->getClient()->getImage() ? $this->order->getClient()->getImage()->getUrl() : $this->default_company_logo ?>" class="">
+                </div>
+                <div class="card-info"> <span class="card-title"><?= $this->order->getClient() ? $this->order->getClient()->getAlias() : '' ?></span>
+                </div>
+            </div>
+
+            <ul class="nav nav-tabs tab-stats">
+                <?php if (($this->defaultCompany && $this->order->getClient() && $this->order->getClient()->getId() == $this->defaultCompany->getId()) || ($this->userModel->getUserCompany() && $quote->getOrder()->getProvider() && ($this->userModel->getUserCompany()->getId() != $quote->getOrder()->getProvider()->getId()))) { ?>                   
+                    <?php if ($this->order && $this->order->getRetrievePeople() && $this->order->getDeliveryPeople()) { ?>        
+                        <li role="order-resume" class="active">
+                            <a href="#order-resume" aria-controls="order-resume" role="tab" data-toggle="tab" aria-expanded="true">
+                                <?= $this->translate('Resume') ?>
+                            </a>
+                        </li> 
+                        <?php
+                    } else {
+                        $active_quote = 'active';
+                    }
+                    ?>
+                    <?php if ($this->quotes && count($this->quotes) > 0) { ?>
+                        <li role="order-quote" class="<?= $active_quote ?>">
+                            <a href="#order-quote" aria-controls="order-quote" role="tab" data-toggle="tab" aria-expanded="true">
+                                <?= $this->translate('Quote') ?>
+                            </a>
+                        </li> 
+                    <?php } ?>
+                    <?php if ($this->quote && $this->order && $this->order->getRetrievePeople()) { ?>
+                        <li role="order-retrieve">
+                            <a href="#order-retrieve" aria-controls="order-retrieve" role="tab" data-toggle="tab" aria-expanded="true">
+                                <?= $this->translate('Retrieve') ?>
+                            </a>
+                        </li>    
+                    <?php } ?>
+                    <?php if ($this->quote && $this->order && $this->order->getDeliveryPeople()) { ?>
+                        <li role="order-delivery">
+                            <a href="#order-delivery" aria-controls="order-delivery" role="tab" data-toggle="tab" aria-expanded="true">
+                                <?= $this->translate('Delivery') ?>
+                            </a>
+                        </li>     
+                    <?php } ?>
+                <?php } else { ?>
+                    <?php $active_dacte = 'active'; ?>
+                <?php } ?>
+                <?php if (!$active_quote) { ?>     
+                    <?php if (($this->defaultCompany && $this->order->getClient() && $this->order->getClient()->getId() == $this->defaultCompany->getId()) || ($this->userModel->getUserCompany() && $quote->getOrder()->getProvider() && $this->userModel->getUserCompany()->getId() != $quote->getOrder()->getProvider()->getId())) { ?>                       
+                        <li role="client-invoice-tax">
+                            <a href="#client-invoice-tax" aria-controls="client-invoice-tax" role="tab" data-toggle="tab" aria-expanded="true">
+                                <?= $this->translate('Invoice tax') ?>
+                            </a>
+                        </li>                                     
+                        <?php if ($this->order && count($this->order->getInvoice()) > 0) { ?>                                     
+                            <li role="order-invoice">
+                                <a href="#order-invoice" aria-controls="order-invoice" role="tab" data-toggle="tab" aria-expanded="true">
+                                    <?= $this->translate('Order invoice') ?>
+                                </a>
+                            </li>                     
+                        <?php } ?>
+                    <?php } ?>
+                    <?php if ($this->userModel->getUserCompany() && $quote->getOrder()->getProvider() && $this->userModel->getUserCompany()->getId() == $quote->getOrder()->getProvider()->getId()) { ?>
+                        <li role="carrier-invoice-tax" class="<?= $active_dacte ?>">
+                            <a href="#carrier-invoice-tax" aria-controls="carrier-invoice-tax" role="tab" data-toggle="tab" aria-expanded="true">
+                                <?= $this->translate('Carrier invoice tax') ?>
+                            </a>
+                        </li> 
+                    <?php } ?>
+                <?php } ?>
+                <?php if ($this->defaultCompany && $this->userModel->getUserCompany() && $this->defaultCompany->getId() == $this->userModel->getUserCompany()->getId()) { ?>                        
+                    <?php if ($this->saleOrders) { ?>
+                        <li role="sales-orders">
+                            <a href="#sales-orders" aria-controls="sales-orders" role="tab" data-toggle="tab" aria-expanded="true">
+                                <?= $this->translate('Sale orders') ?> (<?= count($this->saleOrders) ?>)
+                            </a>
+                        </li>                                     
+                    <?php } ?>                    
+                <?php } ?>
+
+                <?php if (($this->order && count($this->order->getInvoice()) > 0 && count($this->order->getInvoice()[0]->getInvoice()->getServiceInvoiceTax()) > 0) || ($this->order && count($this->order->getInvoice()) > 0 && $this->order->getInvoice()[0]->getInvoice()->getStatus()->getStatus() == 'waiting generate invoice' && $this->defaultCompany && $this->userModel->getUserCompany() && $this->userModel->getUserCompany()->getId() === $this->defaultCompany->getId())) { ?>                    
+                    <li role="service-invoice-tax">
+                        <a href="#service-invoice-tax" aria-controls="service-invoice-tax" role="tab" data-toggle="tab" aria-expanded="true">
+                            <?= $this->translate('Service invoice tax') ?>
+                        </a>
+                    </li>                     
+                <?php } ?>
+            </ul>        
+
+            <div class="row row-order-main-header bg-<?= str_replace(' ', '-', $this->order->getStatus()->getRealStatus()) ?>">
+                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 order-left-header">
+                    <h5>
+                        <b><?= $this->translate('Order Number') ?></b>: <span class="pull-right">#<?= $this->order->getId() ?></span>
+                    </h5>                    
+                    <h5>
+                        <b><?= $this->translate('Order price') ?></b>: <span class="pull-right"><?= $this->translate('corrency_symbol') ?> <?= number_format($this->order->getPrice(), 2, ',', '.') ?></span>
+                    </h5>                                        
+                    <?php if ($this->carrier_invoice_tax_number) { ?>
+                        <h5>
+                            <b><?= $this->translate('Carrier invoice number') ?></b>:  <span class="pull-right"> #<?= $this->carrier_invoice_tax_number ?></span>
+                        </h5>
+                    <?php } ?>
+                    <?php if ($this->invoice_tax_number) { ?>
+                        <h5>
+                            <b><?= $this->translate('Client invoice number') ?></b>:  <span class="pull-right"> #<?= $this->invoice_tax_number ?></span>
+                        </h5>
+                    <?php } ?>
+                    <?php if ($this->invoice_tax_price) { ?>
+                        <h5>                            
+                            <b><?= $this->translate('Client invoice price') ?></b>:  <span class="pull-right"><?= $this->translate('corrency_symbol') ?> <?= number_format((string) $this->invoice_tax_price, 2, ',', '.') ?></span>
+                        </h5>
+                    <?php } ?>
+                </div>
+                <div class="col-lg-9 col-md-9 col-sm-6 col-xs-12 order-right-header">
+                    <label class="control-label">
+                        <h4><?= $this->translate(str_replace(' ', '-', $this->order->getStatus()->getStatus()) . '-header') ?></h4>
+                        <h5><?= $this->translate(str_replace(' ', '-', $this->order->getStatus()->getStatus()) . '-subheader') ?></h4>
+                    </label>
+                    <div class="pull-right">
+                        <?php if ($quote->getOrder()->getStatus()->getStatus() == 'analysis' && $this->userModel->getUserCompany() && $quote->getOrder()->getProvider() && $this->userModel->getUserCompany()->getId() == $quote->getOrder()->getProvider()->getId()) { ?>
+                            <h6>   
+                                <button                            
+                                    data-delete-name="<?= $this->translate('Approve order') ?>" 
+                                    data-calcel-name="<?= $this->translate('Cancel') ?>" 
+                                    data-header="<?= $this->translate('Approve this order?') ?>"
+                                    data-body="#<?= $quote->getOrder()->getId() ?>"
+                                    data-toggle="modal"
+                                    data-target="#confirm-delete"                              
+                                    data-id="<?= $quote->getOrder()->getId() ?>"
+                                    data-delete-confirm="/<?= $this->module_name ?>/approve-order.json"
+                                    data-success-url="/<?= $this->module_name ?>/order/id/<?= $this->order->getId() ?>"  
+                                    id="order-status-<?= $quote->getOrder()->getId() ?>"
+                                    name="approve-order" type="button" class="btn btn-primary"><?= $this->translate('Approve order') ?></button>
+                            </h6>
+                        <?php } ?>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body tab-content">
+                <?php if (($this->defaultCompany && $this->order->getClient() && $this->order->getClient()->getId() == $this->defaultCompany->getId()) || ($this->userModel->getUserCompany() && $quote->getOrder()->getProvider() && $this->userModel->getUserCompany()->getId() != $quote->getOrder()->getProvider()->getId())) { ?>
+                    <?php if ($this->order && $this->order->getRetrievePeople() && $this->order->getDeliveryPeople()) { ?>        
+                        <div role="tabpanel" class="tab-pane active" id="order-resume">
+                            <?= $this->render("purchasing/default/quote-details.phtml"); ?>                    
+                        </div>
+                    <?php } ?>        
+                    <?php if ($this->quotes && count($this->quotes) > 0) { ?>
+                        <div role="tabpanel" class="tab-pane <?= $active_quote ?>" id="order-quote">
+                            <?= $this->render("purchasing/default/order-quote.phtml"); ?>                    
+                        </div>   
+                    <?php } ?>
+                    <?php if ($this->quote && $this->order && $this->order->getRetrievePeople()) { ?>
+                        <div role="tabpanel" class="tab-pane" id="order-retrieve">
+                            <?= $this->render("purchasing/default/order-retrieve.phtml"); ?>                    
+                        </div>    
+                    <?php } ?>
+                    <?php if ($this->quote && $this->order && $this->order->getDeliveryPeople()) { ?>
+                        <div role="tabpanel" class="tab-pane" id="order-delivery">                    
+                            <?= $this->render("purchasing/default/order-delivery.phtml"); ?>                
+                        </div>                
+                    <?php } ?>
+                <?php } ?>
+                <?php if (!$active_quote) { ?>                                                            
+                    <?php if (($this->defaultCompany && $this->order->getClient() && $this->order->getClient()->getId() == $this->defaultCompany->getId()) || ($this->userModel->getUserCompany() && $quote->getOrder()->getProvider() && $this->userModel->getUserCompany()->getId() != $quote->getOrder()->getProvider()->getId())) { ?>
+                        <div role="tabpanel" class="tab-pane" id="client-invoice-tax">
+                            <?= $this->render("purchasing/default/client-invoice-tax.phtml"); ?>                    
+                        </div>                        
+                        <?php if ($this->order && count($this->order->getInvoice()) > 0) { ?>                    
+                            <div role="tabpanel" class="tab-pane" id="order-invoice">
+                                <?= $this->render("purchasing/default/order-invoice.phtml"); ?>                    
+                            </div>
+                        <?php } ?>                    
+                    <?php } ?>                    
+                    <?php if ($this->userModel->getUserCompany() && $quote->getOrder()->getProvider() && $this->userModel->getUserCompany()->getId() == $quote->getOrder()->getProvider()->getId()) { ?>
+                        <div role="tabpanel" class="tab-pane <?= $active_dacte ?>" id="carrier-invoice-tax">
+                            <?= $this->render("purchasing/default/carrier-invoice-tax.phtml"); ?>                    
+                        </div>
+                    <?php } ?>                    
+                <?php } ?>
+
+                <?php if ($this->defaultCompany && $this->userModel->getUserCompany() && $this->defaultCompany->getId() == $this->userModel->getUserCompany()->getId()) { ?>                   
+                    <?php if ($this->saleOrders) { ?>   
+                        <div role="tabpanel" class="tab-pane" id="sales-orders">
+                            <?= $this->render("purchasing/default/sales-orders.phtml"); ?>
+                        </div>
+                    <?php } ?>                          
+                <?php } ?>                
+                <?php if (($this->order && count($this->order->getInvoice()) > 0 && count($this->order->getInvoice()[0]->getInvoice()->getServiceInvoiceTax()) > 0) || ($this->order && count($this->order->getInvoice()) > 0 && $this->order->getInvoice()[0]->getInvoice()->getStatus()->getStatus() == 'waiting generate invoice' && $this->defaultCompany && $this->userModel->getUserCompany() && $this->userModel->getUserCompany()->getId() === $this->defaultCompany->getId())) { ?>                    
+                    <div role="tabpanel" class="tab-pane" id="service-invoice-tax">
+                        <?= $this->render("purchasing/default/service-invoice-tax.phtml"); ?>                    
+                    </div>
+                <?php } ?>
+            </div>
+        </div>         
+    </div>
+</div>

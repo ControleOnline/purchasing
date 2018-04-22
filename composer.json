@@ -1,0 +1,21 @@
+{
+    "name": "controleonline/purchasing",
+    "description": "Controle Online - Purchasing Module",
+    "license": "BSD-3-Clause",
+    "keywords": [
+        "Purchasing"
+    ],
+    "autoload": {
+        "psr-4": {
+            "Purchasing\\": "src/Purchasing"
+        },
+        "classmap": [
+            "Module.php"
+        ]
+    },
+    "homepage": "https://github.com/ControleOnline/purchasing",
+    "require": {
+        "controleonline/core": "*",
+        "controleonline/user": "*"
+    }    
+}

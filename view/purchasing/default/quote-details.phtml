@@ -1,0 +1,384 @@
+<div id="quote-details-container" data-quote="<?= $this->quote->getId() ?>">    
+    <form>
+        <input name="order" value="<?= $this->order->getId() ?>" type="hidden">
+        <?php if ($this->order && $this->order->getRetrievePeople() && $this->order->getDeliveryPeople()) { ?>        
+            <div class="row text-center <?= $this->order->getRetrievePeople()->getId() == $this->order->getDeliveryPeople()->getId() ? 'hidden' : '' ?>">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <label class="control-label" for="choose-payer"><?= $this->translate('Payer question') ?></label>
+                    <div class="form-group">
+                        <label class="radio-inline">
+                            <input data-container-show-on-change=".quote-datails" <?= ($this->order->getPayer() && $this->order->getPayer()->getId() == $this->order->getRetrievePeople()->getId()) || $this->order->getRetrievePeople()->getId() == $this->order->getDeliveryPeople()->getId() ? 'checked' : '' ?> type="radio" name="choose-payer" value="<?= $this->order->getRetrievePeople()->getId() ?>">
+                            <?= $this->order->getRetrievePeople()->getName() ?>
+                            <?= $this->translate('(CIF)') ?>                        
+                        </label>
+                        <label class="radio-inline">
+                            <input data-container-show-on-change=".quote-datails"<?= $this->order->getPayer() && $this->order->getPayer()->getId() == $this->order->getDeliveryPeople()->getId() ? 'checked' : '' ?> type="radio" name="choose-payer" value="<?= $this->order->getDeliveryPeople()->getId() ?>">
+                            <?= $this->order->getDeliveryPeople()->getName() ?>
+                            <?= $this->translate('(FOB)') ?>
+                        </label>
+                    </div>
+                </div>            
+            </div>        
+            <div class="row quote-datails" <?= $this->order->getPayer() || $this->order->getRetrievePeople()->getId() == $this->order->getDeliveryPeople()->getId() ? '' : 'style="display:none;"' ?>>
+                <div class="row quote-datails-inside">
+                    <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5 retrieve-box">
+                        <?php if ($this->order && $this->order->getRetrievePeople()) { ?>
+                            <div class="row-box">
+                                <div class="fix-box-height">
+                                    <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 no-margin title-container">                    
+                                        <label class="control-label label-title" ><?= $this->translate('Retrieve data') ?></label>                    
+                                    </div>                
+                                    <?php if ($this->order->getRetrievePeople()->getPeopleType() == 'J') { ?>                               
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                            <label class="control-label" for="company-alias"><?= $this->translate('Company Alias') ?>:</label>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                                            <span><?= $this->order->getRetrievePeople()->getAlias() ?></span>                    
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                            <label class="control-label" for="name"><?= $this->translate('Company Name') ?>:</label>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                                            <span><?= $this->order->getRetrievePeople()->getName() ?></span>                    
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                            <label class="control-label" for="company-document"><?= $this->translate('Company Document') ?>:</label>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                                            <?php
+                                            $doc = '';
+                                            if ($this->order->getRetrievePeople() && $this->order->getRetrievePeople()->getDocument()) {
+                                                foreach ($this->order->getRetrievePeople()->getDocument() AS $document) {
+                                                    if ($document->getDocumentType()->getDocumentType() == 'CNPJ') {
+                                                        $doc = Core\Helper\Format::maskNumber("##.###.###/####-##", $document->getDocument());
+                                                    }
+                                                }
+                                            }
+                                            ?>
+                                            <span><?= $doc ?></span>                    
+                                        </div>                          
+                                    <?php } ?>
+                                    <?php if ($this->order->getRetrievePeople()->getPeopleType() == 'F') { ?>         
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                            <label class="control-label" for="client-document"><?= $this->translate('Client Document') ?>:</label>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                                            <?php
+                                            $doc = '';
+                                            if ($this->order->getRetrievePeople() && $this->order->getRetrievePeople()->getDocument()) {
+                                                foreach ($this->order->getRetrievePeople()->getDocument() AS $document) {
+                                                    if ($document->getDocumentType()->getDocumentType() == 'CPF') {
+                                                        $doc = Core\Helper\Format::maskNumber("###.###.###-##", str_pad($document->getDocument(), 10, '0', STR_PAD_LEFT));
+                                                    }
+                                                }
+                                            }
+                                            ?>
+                                            <span><?= $doc ?></span>                    
+                                        </div>                       
+                                    <?php } ?>
+                                    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 <?= ($this->order->getRetrievePeople()->getPeopleType() == 'F') ?: 'row-hidden hidden' ?>">
+                                        <label class="control-label" for="client-name"><?= $this->translate('Quote client name') ?>:</label>
+                                    </div>
+                                    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 <?= ($this->order->getRetrievePeople()->getPeopleType() == 'F') ?: 'row-hidden hidden' ?>">                    
+                                        <span><?= $this->order->getRetrieveContact() ? $this->order->getRetrieveContact()->getName() : '' ?></span>                    
+                                    </div>
+                                    <?php if ($this->order->getRetrieveContact() && count($this->order->getRetrieveContact()->getEmail()) > 0) { ?>
+                                        <?php foreach ($this->order->getRetrieveContact()->getEmail() AS $email) { ?>
+                                            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">
+                                                <label class="control-label" id="label-add-email" for="input-add-email"><?= $this->translate('Email') ?>:</label>
+                                            </div>                    
+                                            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">                    
+                                                <span><?= $email->getEmail() ?></span>                                            
+                                            </div>                
+                                        <?php } ?>
+                                    <?php } ?>
+                                    <?php if ($this->order->getRetrieveContact() && count($this->order->getRetrieveContact()->getPhone()) > 0) { ?>
+                                        <?php foreach ($this->order->getRetrieveContact()->getPhone() AS $phone) { ?>
+                                            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">
+                                                <label class="control-label" id="label-add-phone" for="input-add-phone"><?= $this->translate('Phone') ?>:</label>
+                                            </div>
+                                            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">                    
+                                                <span data-contact-ddd="contact-ddd" >(<?= $phone->getDdd() ?>)</span>                        
+                                                <span data-contact-phone="contact-phone"><?= Core\Helper\Format::maskNumber(strlen($phone->getPhone()) > 8 ? "#####-####" : "####-####", $phone->getPhone()) ?></span>
+                                            </div>
+                                        <?php } ?>
+                                    <?php } ?>
+                                    <?php if ($this->order->getAddressOrigin()) { ?>                                                                        
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">
+                                            <label class="control-label" for="address-cep"><?= $this->translate('Postal code') ?>:</label>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">                    
+                                            <span><?= preg_replace("/^(\d{5})(\d{3})$/", "\\1-\\2", str_pad($this->order->getAddressOrigin()->getStreet()->getCep()->getCep(), 8, '0', STR_PAD_LEFT)) ?></span>                    
+                                        </div> 
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">
+                                            <label class="control-label" for="address-street"><?= $this->translate('Address Origin') ?>:</label>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">                    
+                                            <span><?= $this->order->getAddressOrigin()->getStreet()->getStreet() ?></span>                    
+                                        </div>                                    
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">
+                                            <label class="control-label" for="address-number"><?= $this->translate('Address number') ?>:</label>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">                    
+                                            <span><?= $this->order->getAddressOrigin()->getNumber() ?></span>                    
+                                        </div> 
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">
+                                            <label class="control-label" for="address-complement"><?= $this->translate('Address complement') ?>:</label>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">                    
+                                            <span><?= $this->order->getAddressOrigin()->getComplement() ?></span>                    
+                                        </div> 
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">
+                                            <label class="control-label" for="address-district"><?= $this->translate('Address district') ?>:</label>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">                    
+                                            <span><?= $this->order->getAddressOrigin()->getStreet()->getDistrict()->getDistrict() ?></span>                    
+                                        </div> 
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                            <label class="control-label" for="address-city"><?= $this->translate('Address city') ?>:</label>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                                            <span><?= $this->order->getAddressOrigin()->getStreet()->getDistrict()->getCity()->getCity() ?> /
+                                                <?= $this->order->getAddressOrigin()->getStreet()->getDistrict()->getCity()->getState()->getUf() ?>
+                                            </span>                    
+                                        </div> 
+                                    <?php } ?>
+                                </div>
+                                <button type="button" data-toggle-class="hidden" data-toggle-container=".retrieve-box .row-hidden" class="quote-details-show-origin btn btn-primary pull-right"><?= $this->translate('Retrieve details') ?></button>
+                                <div class="clearfix"></div>
+                            </div>
+                        <?php } ?>   
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 vertical-center">
+                        <div class="outer">
+                            <div class="middle">
+                                <nobr>
+                                    <i class="fa fa-angle-double-right fa-4x" aria-hidden="true"></i>
+                                    <i class="fa fa-truck fa-4x inner fa-truck-blue" aria-hidden="true"></i>
+                                    <i class="fa fa-angle-double-right fa-4x" aria-hidden="true"></i>
+                                </nobr>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5 delivery-box">
+                        <?php if ($this->order && $this->order->getDeliveryPeople()) { ?>
+                            <div class="row-box">
+                                <div class="fix-box-height">
+                                    <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 no-margin title-container">
+                                        <label class="control-label label-title" ><?= $this->translate('Delivery data') ?></label>                    
+                                    </div>                
+                                    <?php if ($this->order->getDeliveryPeople()->getPeopleType() == 'J') { ?>                              
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                            <label class="control-label" for="company-alias"><?= $this->translate('Company Alias') ?>:</label>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                                            <span><?= $this->order->getDeliveryPeople()->getAlias() ?></span>                    
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                            <label class="control-label" for="name"><?= $this->translate('Company Name') ?>:</label>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                                            <span><?= $this->order->getDeliveryPeople()->getName() ?></span>                    
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                            <label class="control-label" for="company-document"><?= $this->translate('Company Document') ?>:</label>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                                            <?php
+                                            $doc = '';
+                                            if ($this->order->getDeliveryPeople() && $this->order->getDeliveryPeople()->getDocument()) {
+                                                foreach ($this->order->getDeliveryPeople()->getDocument() AS $document) {
+                                                    if ($document->getDocumentType()->getDocumentType() == 'CNPJ') {
+                                                        $doc = Core\Helper\Format::maskNumber("##.###.###/####-##", $document->getDocument());
+                                                    }
+                                                }
+                                            }
+                                            ?>
+                                            <span><?= $doc ?></span>                    
+                                        </div>                          
+                                    <?php } ?>
+                                    <?php if ($this->order->getDeliveryPeople()->getPeopleType() == 'F') { ?>                                            
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                            <label class="control-label" for="client-document"><?= $this->translate('Client Document') ?>:</label>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                                            <?php
+                                            $doc = '';
+                                            if ($this->order->getDeliveryPeople() && $this->order->getDeliveryPeople()->getDocument()) {
+                                                foreach ($this->order->getDeliveryPeople()->getDocument() AS $document) {
+                                                    if ($document->getDocumentType()->getDocumentType() == 'CPF') {
+                                                        $doc = Core\Helper\Format::maskNumber("###.###.###-##", str_pad($document->getDocument(), 10, '0', STR_PAD_LEFT));
+                                                    }
+                                                }
+                                            }
+                                            ?>
+                                            <span><?= $doc ?></span>                    
+                                        </div>                      
+                                    <?php } ?>
+                                    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 <?= ($this->order->getDeliveryPeople()->getPeopleType() == 'F') ?: 'row-hidden hidden' ?>">
+                                        <label class="control-label" for="client-name"><?= $this->translate('Quote client name') ?>:</label>
+                                    </div>
+                                    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 <?= ($this->order->getDeliveryPeople()->getPeopleType() == 'F') ?: 'row-hidden hidden' ?>">                    
+                                        <span><?= $this->order->getDeliveryContact() ? $this->order->getDeliveryContact()->getName() : '' ?></span>                    
+                                    </div>            
+                                    <?php if ($this->order->getDeliveryContact() && count($this->order->getDeliveryContact()->getEmail()) > 0) { ?>
+                                        <?php foreach ($this->order->getDeliveryContact()->getEmail() AS $email) { ?>
+                                            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">
+                                                <label class="control-label" id="label-add-email" for="input-add-email"><?= $this->translate('Email') ?>:</label>
+                                            </div>
+                                            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">                    
+                                                <span><?= $email->getEmail() ?></span>                                            
+                                            </div>                
+                                        <?php } ?>
+                                    <?php } ?>
+                                    <?php if ($this->order->getDeliveryContact() && count($this->order->getDeliveryContact()->getPhone()) > 0) { ?>
+                                        <?php foreach ($this->order->getDeliveryContact()->getPhone() AS $phone) { ?>
+                                            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">
+                                                <label class="control-label" id="label-add-phone" for="input-add-phone"><?= $this->translate('Phone') ?>:</label>
+                                            </div>
+                                            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">                    
+                                                <span data-contact-ddd="contact-ddd" >(<?= $phone->getDdd() ?>)</span>                        
+                                                <span data-contact-phone="contact-phone"><?= Core\Helper\Format::maskNumber(strlen($phone->getPhone()) > 8 ? "#####-####" : "####-####", $phone->getPhone()) ?></span>
+                                            </div>
+                                        <?php } ?>
+                                    <?php } ?>   
+                                    <?php if ($this->order->getAddressDestination()) { ?>                                                                        
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">
+                                            <label class="control-label" for="address-cep"><?= $this->translate('Postal code') ?>:</label>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">                    
+                                            <span><?= preg_replace("/^(\d{5})(\d{3})$/", "\\1-\\2", str_pad($this->order->getAddressDestination()->getStreet()->getCep()->getCep(), 8, '0', STR_PAD_LEFT)) ?></span>                    
+                                        </div> 
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">
+                                            <label class="control-label" for="address-street"><?= $this->translate('Address destination') ?>:</label>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">                    
+                                            <span><?= $this->order->getAddressDestination()->getStreet()->getStreet() ?></span>                    
+                                        </div>                                    
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">
+                                            <label class="control-label" for="address-number"><?= $this->translate('Address number') ?>:</label>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">                    
+                                            <span><?= $this->order->getAddressDestination()->getNumber() ?></span>                    
+                                        </div> 
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">
+                                            <label class="control-label" for="address-complement"><?= $this->translate('Address complement') ?>:</label>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">                    
+                                            <span><?= $this->order->getAddressDestination()->getComplement() ?></span>                    
+                                        </div> 
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">
+                                            <label class="control-label" for="address-district"><?= $this->translate('Address district') ?>:</label>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 row-hidden hidden">                    
+                                            <span><?= $this->order->getAddressDestination()->getStreet()->getDistrict()->getDistrict() ?></span>                    
+                                        </div> 
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                            <label class="control-label" for="address-city"><?= $this->translate('Address city') ?>:</label>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                                            <span>
+                                                <?= $this->order->getAddressDestination()->getStreet()->getDistrict()->getCity()->getCity() ?> /
+                                                <?= $this->order->getAddressDestination()->getStreet()->getDistrict()->getCity()->getState()->getUf() ?>
+                                            </span>                    
+                                        </div> 
+                                    <?php } ?>
+                                </div>            
+                                <button type="button" data-toggle-class="hidden" data-toggle-container=".delivery-box .row-hidden" class="quote-details-show-destination btn btn-primary pull-right"><?= $this->translate('Delivery details') ?></button>
+                                <div class="clearfix"></div>
+                            </div>   
+                        <?php } ?>
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 product-resume">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                        <label class="control-label"><?= $this->translate('Cubage') ?></label><br>
+                        <label class="control-label"><?= number_format($this->order->getCubage(), 3, ',', '.') . ' kg' ?></label>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                        <label class="control-label"><?= $this->translate('Product Type') ?></label><br>
+                        <label class="control-label"><?= $this->order->getProductType() ?></label>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                        <label class="control-label"> <?= $this->translate('Quote Invoice Total') ?></label><br>
+                        <label class="control-label"><?= $this->translate('corrency_symbol') ?> <?= number_format($this->order->getInvoiceTotal(), 2, ',', '.') ?></label>
+                    </div>
+                </div>
+                <h5><label class="control-label label-title"><?= $this->translate('Product details') ?></label></h5>
+                <div class="box-product-size card" id="product-size-box-up">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 product-size">                                
+                        <div class="col-lg-1 col-md-2 col-sm-2 col-xs-12">
+                            <label class="control-label"><?= $this->translate('Qtd') ?></label>
+                        </div>                    
+                        <div class="col-lg-2 col-md-4 col-sm-4 col-xs-12">
+                            <label class="control-label"><?= $this->translate('Weight') ?></label>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                            <label class="control-label"><?= $this->translate('Height') ?></label>
+                        </div>                                                        
+                        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">                                                                                               
+                            <label class="control-label"><?= $this->translate('Width') ?></label>
+                        </div>                    
+                        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                            <label class="control-label"><?= $this->translate('Depth') ?></label>
+                        </div>                                                    
+                    </div>
+                    <?php foreach ($this->order->getOrderPackage() AS $key => $product) { ?>                   
+                        <div class="box-product-size box-size">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 product-size product-size-<?= $key ?>">
+                                <div class="col-lg-1 col-md-2 col-sm-2 col-xs-12">
+                                    <div class="form-group">                                                    
+                                        <input type="number" data-mask="({mask:999})" class="form-control" name="product-package[<?= $key ?>][qtd]" placeholder="<?= $this->translate('Qtd') ?>" value="<?= $product->getQtd() ?>" readonly>
+                                        <label for="product-package[<?= $key ?>][qtd]" class="control-label label-mini"><?= $this->translate('Measured by unit') ?></label>
+                                    </div>
+                                </div>                    
+                                <div class="col-lg-2 col-md-4 col-sm-4 col-xs-12">
+                                    <div class="form-group">                                                    
+                                        <input type="text" data-mask="({prefix: '',suffix: ' kg',integerDigits: 4,digits: 3,clearIncomplete: true,alias: 'currency',rightAlign: false,radixPoint: ',',groupSeparator: '.'})" class="form-control" name="product-package[<?= $key ?>][weight]" placeholder="<?= $this->translate('Package weight') ?>" value="<?= str_replace('.', ',', $product->getWeight()) ?>" readonly>
+                                        <label for="product-package[<?= $key ?>][weight]" class="control-label label-mini"><?= $this->translate('Weight in kilograms') ?></label>
+                                    </div>                    
+                                </div>
+                                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                                    <div class="form-group">                                                    
+                                        <input type="text" data-mask="({prefix: '',suffix: ' m',integerDigits: 2,clearIncomplete: true,alias: 'currency',rightAlign: false,radixPoint: ',',groupSeparator: '.'})" class="form-control" name="product-package[<?= $key ?>][height]" placeholder="<?= $this->translate('Package height') ?>" value="<?= str_replace('.', ',', $product->getHeight()) ?>" readonly>
+                                        <label for="product-package[<?= $key ?>][height]" class="control-label label-mini"><?= $this->translate('Measured in meters') ?></label>
+                                    </div>
+                                </div>                    
+                                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">                            
+                                    <div class="form-group">                                                    
+                                        <input type="text" data-mask="({prefix: '',suffix: ' m',integerDigits: 2,clearIncomplete: true,alias: 'currency',rightAlign: false,radixPoint: ',',groupSeparator: '.'})" class="form-control" name="product-package[<?= $key ?>][width]" placeholder="<?= $this->translate('Package width') ?>" value="<?= str_replace('.', ',', $product->getWidth()) ?>" readonly>
+                                        <label for="product-package[<?= $key ?>][width]" class="control-label label-mini"><?= $this->translate('Measured in meters') ?></label>
+                                    </div>
+                                </div>                    
+                                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                                    <div class="form-group">                                                    
+                                        <input type="text" data-mask="({prefix: '',suffix: ' m',integerDigits: 2,clearIncomplete: true,alias: 'currency',rightAlign: false,radixPoint: ',',groupSeparator: '.'})" class="form-control" name="product-package[<?= $key ?>][depth]" placeholder="<?= $this->translate('Package depth') ?>" value="<?= str_replace('.', ',', $product->getDepth()) ?>" readonly>
+                                        <label for="product-package[<?= $key ?>][depth]" class="control-label label-mini"><?= $this->translate('Measured in meters') ?></label>
+                                    </div>
+                                </div>                                                    
+                            </div>
+                        </div>   
+                    <?php } ?>
+                </div>  
+                <div class="comments-container col-xs-12 col-sm-12 col-md-12 col-lg-12">                
+                    <div class="form-group">
+                        <label for="order-comments"><?= $this->translate('Comments') ?>:</label>
+                        <?php if ($quote->getOrder()->getStatus()->getStatus() == 'quote' || $this->userModel->getUserCompany() && $quote->getOrder()->getProvider() && $this->userModel->getUserCompany()->getId() == $quote->getOrder()->getProvider()->getId()) { ?>
+                            <textarea class="form-control" rows="5"  name="order-comments"><?= $this->order->getComments() ?></textarea>
+                        <?php } else { ?>
+                            <span class="form-control" rows="5"  name="order-comments"><?= $this->order->getComments() ?></span>
+                        <?php } ?>
+
+                    </div>
+                </div>
+                <?php if ($quote->getOrder()->getStatus()->getStatus() == 'quote' || $this->userModel->getUserCompany() && $quote->getOrder()->getProvider() && $this->userModel->getUserCompany()->getId() == $quote->getOrder()->getProvider()->getId()) { ?>
+                    <button data-success-url="/purchasing/order/id/<?= $this->order->getId() ?>" data-add="/sales/add-quote-details.json" name="add-quote-details" type="button" class="btn btn-primary pull-right"><?= $this->translate('Finish order') ?></button>
+                <?php } ?>
+            </div>         
+        <?php } else { ?>
+            <?= $this->translate('You must enter the retrieve and delivery data before finalizing the quote') ?>
+        <?php } ?>
+        <div class="clearfix"></div>
+    </form>
+</div>

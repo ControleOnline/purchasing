@@ -1,0 +1,79 @@
+<span></span>
+<div class="row">
+    <div id="quote-container">
+        <?php if ($this->quotes) { ?>            
+            <?php foreach ($this->quotes AS $key => $quote) { ?>
+                <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 quote-box">
+                    <div class="card card-shadow">
+                        <div class="retrieve-deadline-border"></div>
+                        <div class="retrieve-deadline"><?= $this->translate('Retrieve up to') ?> 1 <?= $this->translate('useful day') ?></div>
+                        <div class="card-header quote-header">                        
+                            <?php if ($quote->getCarrier()->getImage()) { ?> 
+                                <img alt="<?= $quote->getCarrier()->getAlias() ?>" title="<?= $quote->getCarrier()->getAlias() ?>" src="<?= $quote->getCarrier()->getImage()->getUrl() ?>"/>
+                            <?php } else { ?>
+                                <h3 class="quote-tittle"><?= $quote->getCarrier()->getAlias() ?></h3>
+                            <?php } ?>
+                            <h5 class="quote-subtittle"><small class="text-muted"><?= $quote->getCarrier()->getName() ?></small></h5>                                                    
+                            <h5 class="deadline"><?= $quote->getDeadline() ? ($this->translate('Delivery deadline') . ' <b>' . $quote->getDeadline() . '</b> ' . ($quote->getDeadline() > 1 ? $this->translate('days') : $this->translate('day'))) : '' ?></h5>
+                            <?php if ($this->defaultCompany && $this->userModel->getUserCompany() && $this->userModel->getUserCompany()->getId() === $this->defaultCompany->getId()) { ?>               
+                                <i class="fa fa-info-circle btn-quote-details" data-toggle="collapse" data-target="#details-<?= $key ?>" aria-hidden="true"></i>
+                            <?php } ?>                                           
+                        </div>
+                        <div class="card-body no-padding">                            
+                            <div id="details-<?= $key ?>" class="quote-details collapse clearfix col-lg-12 col-md-12 col-sm-12 col-xs-12">                                
+                                <?php foreach ($quote->getQuoteDetail() AS $tax) { ?>
+                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 tax-details"><?= $tax->getTaxName() ?></div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 quote-money tax-details"><?= $this->translate('corrency_symbol') . ' ' . ' ' . number_format($tax->getPriceCalculated(), 2, ',', '.') ?></div>                                
+                                <?php } ?>                               
+                            </div>
+                            <div class="clearfix clear-margin"></div>
+                            <div class="clearfix col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 quote-money no-padding">                                    
+                                    <div class="pull-right quote-money-value">
+                                        <?= $this->translate('corrency_symbol') . ' ' . ' ' . number_format($quote->getTotal(), 2, ',', '.') ?>    
+                                    </div>
+                                    <div class="pull-right quote-money-label">
+                                        <?= $this->translate('Quote total') ?>
+                                    </div>
+                                </div>                        
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 quote-money no-padding">                                                                        
+                                    <div class="pull-right quote-card-price">
+                                        <?= $this->translate('corrency_symbol') . ' ' . ' ' . number_format((number_format($quote->getTotal(), 2, '.', '') / 6), 2, ',', '.') ?>                                            
+                                    </div>
+                                    <div class="pull-right quote-card-label">
+                                        <?= $this->translate('or until') ?> 6x <?= $this->translate('of') ?>
+                                    </div>
+                                </div>                            
+                            </div>                            
+                            <div class="clearfix col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                    <h6 class="no-padding no-margin"><?= $this->translate('Rating') ?></h6>
+                                    <?php for ($i = 1; $i <= 5; $i++) { ?>
+                                        <span class="fa fa-star <?= $i <= 4 ? 'checked' : '' ?>"></span>                                    
+                                    <?php } ?>
+                                </div>                                    
+                                <?php if ($quote->getOrder()->getStatus()->getStatus() == 'quote' || $this->userModel->getUserCompany() && $quote->getOrder()->getProvider() && $this->userModel->getUserCompany()->getId() == $quote->getOrder()->getProvider()->getId()) { ?>
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        <button id="btn-quote-<?= $quote->getId() ?>" type="button" data-quote="<?= $quote->getId() ?>" class="btn <?= $quote->getDenied() ? 'btn-warning' : 'btn-success' ?>  pull-right acquire text-uppercase" data-add-form="/sales/choose-quote.form?quote=<?= $quote->getId() ?>">
+                                            <?= $this->translate('Acquire') ?>
+                                        </button>                        
+                                    </div>
+                                <?php } ?>
+                            </div>
+                            <div class="clearfix"></div>                    
+                        </div>
+                    </div>
+                </div>
+                <?php
+            }
+        } else {
+            if ($this->error) {
+                foreach ($this->error AS $error) {
+                    echo '<div class="alert alert-danger fade in alert-dismissable col-lg-12 col-md-12 col-sm-12 col-xs-12">' . $error['message'] . '</div>';
+                }
+            }
+        }
+        ?>
+        <div class="clearfix"></div>
+    </div>
+</div>

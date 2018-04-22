@@ -1,0 +1,134 @@
+<?php if ($this->quote && $this->order && $this->order->getRetrievePeople()) { ?>
+    <div class="row-box">
+        <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 no-margin no-padding">                    
+            <label class="control-label label-title" ><?= $this->translate('Retrieve data') ?></label>                    
+        </div>                
+        <?php if ($this->order->getRetrievePeople()->getPeopleType() == 'J') { ?>
+            <div class="company-retrieve row fix-box-height">                                
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <label class="control-label" for="company-alias"><?= $this->translate('Company Alias') ?>:</label>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                    <span><?= $this->order->getRetrievePeople()->getAlias() ?></span>                    
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <label class="control-label" for="name"><?= $this->translate('Company Name') ?>:</label>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                    <span><?= $this->order->getRetrievePeople()->getName() ?></span>                    
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <label class="control-label" for="company-document"><?= $this->translate('Company Document') ?>:</label>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                    <?php
+                    $doc = '';
+                    if ($this->order->getRetrievePeople() && $this->order->getRetrievePeople()->getDocument()) {
+                        foreach ($this->order->getRetrievePeople()->getDocument() AS $document) {
+                            if ($document->getDocumentType()->getDocumentType() == 'CNPJ') {
+                                $doc = Core\Helper\Format::maskNumber("##.###.###/####-##", $document->getDocument());
+                            }
+                        }
+                    }
+                    ?>
+                    <span><?= $doc ?></span>                    
+                </div>                          
+            </div>
+        <?php } ?>        
+        <?php if ($this->order->getRetrievePeople()->getPeopleType() == 'F') { ?>
+            <div class="row">            
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <label class="control-label" for="client-document"><?= $this->translate('Client Document') ?>:</label>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                    <?php
+                    $doc = '';
+                    if ($this->order->getRetrievePeople() && $this->order->getRetrievePeople()->getDocument()) {
+                        foreach ($this->order->getRetrievePeople()->getDocument() AS $document) {
+                            if ($document->getDocumentType()->getDocumentType() == 'CPF') {
+                                $doc = Core\Helper\Format::maskNumber("###.###.###-##", str_pad($document->getDocument(), 10, '0', STR_PAD_LEFT));
+                            }
+                        }
+                    }
+                    ?>
+                    <span><?= $doc ?></span>                    
+                </div>                         
+            </div>                    
+        <?php } ?>
+        <div class="row fix-box-height">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <label class="control-label" for="client-name"><?= $this->translate('Quote client name') ?>:</label>
+            </div>
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                <span><?= $this->order->getRetrieveContact() ? $this->order->getRetrieveContact()->getName() : '' ?></span>                    
+            </div>
+            <?php if ($this->order->getRetrieveContact() && count($this->order->getRetrieveContact()->getEmail()) > 0) { ?>
+                <?php foreach ($this->order->getRetrieveContact()->getEmail() AS $email) { ?>
+                    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                        <label class="control-label" id="label-add-email" for="input-add-email"><?= $this->translate('Email') ?>:</label>
+                    </div>                    
+                    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                        <span><?= $email->getEmail() ?></span>                                            
+                    </div>                
+                <?php } ?>
+            <?php } ?>
+            <?php if ($this->order->getRetrieveContact() && count($this->order->getRetrieveContact()->getPhone()) > 0) { ?>
+                <?php foreach ($this->order->getRetrieveContact()->getPhone() AS $phone) { ?>
+                    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                        <label class="control-label" id="label-add-phone" for="input-add-phone"><?= $this->translate('Phone') ?>:</label>
+                    </div>
+                    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                        <span data-contact-ddd="contact-ddd" >(<?= $phone->getDdd() ?>)</span>                        
+                        <span data-contact-phone="contact-phone"><?= Core\Helper\Format::maskNumber(strlen($phone->getPhone()) > 8 ? "#####-####" : "####-####", $phone->getPhone()) ?></span>
+                    </div>
+                <?php } ?>
+            <?php } ?>
+            <?php if ($this->order->getAddressOrigin()) { ?>                                                                        
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <label class="control-label" for="address-cep"><?= $this->translate('Postal code') ?>:</label>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                    <span><?= preg_replace("/^(\d{5})(\d{3})$/", "\\1-\\2", str_pad($this->order->getAddressOrigin()->getStreet()->getCep()->getCep(), 8, '0', STR_PAD_LEFT)) ?></span>                    
+                </div> 
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <label class="control-label" for="address-street"><?= $this->translate('Address Origin') ?>:</label>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                    <span><?= $this->order->getAddressOrigin()->getStreet()->getStreet() ?></span>                    
+                </div>                                    
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <label class="control-label" for="address-number"><?= $this->translate('Address number') ?>:</label>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                    <span><?= $this->order->getAddressOrigin()->getNumber() ?></span>                    
+                </div> 
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <label class="control-label" for="address-complement"><?= $this->translate('Address complement') ?>:</label>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                    <span><?= $this->order->getAddressOrigin()->getComplement() ?></span>                    
+                </div> 
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <label class="control-label" for="address-district"><?= $this->translate('Address district') ?>:</label>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                    <span><?= $this->order->getAddressOrigin()->getStreet()->getDistrict()->getDistrict() ?></span>                    
+                </div> 
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <label class="control-label" for="address-city"><?= $this->translate('Address city') ?>:</label>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                    <span><?= $this->order->getAddressOrigin()->getStreet()->getDistrict()->getCity()->getCity() ?></span>                    
+                </div> 
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <label class="control-label" for="address-state"><?= $this->translate('Address state') ?>:</label>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">                    
+                    <span><?= $this->order->getAddressOrigin()->getStreet()->getDistrict()->getCity()->getState()->getState() ?></span>                    
+                </div> 
+            <?php } ?>
+        </div>                          
+    </div>
+<?php } else { ?>     
+    <?= $this->translate('Retrieve details has not yet been filled') ?>
+<?php } ?>       

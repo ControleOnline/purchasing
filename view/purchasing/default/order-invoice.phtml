@@ -1,0 +1,20 @@
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 invoice-header">
+    <h4 class="pull-left">Fatura: #<?= $this->order->getInvoice()[0]->getInvoice()->getId(); ?></h4>
+    <h4 class="pull-right">Vencimento: <?= $this->order->getInvoice()[0]->getInvoice()->getDueDate()->format('d/m/Y'); ?>    </h4>
+</div>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-right">
+    <form id="itau-form-status" method="POST" class="itau-payment" action="<?= $this->config->config('itau-shopline-status-url') ?>" name="itau-form-status" target="SHOPLINE">
+        <input type="hidden" name="DC" value="<?= $this->itauStatusData ?>">
+        <input type="submit" name="Shopline" value="<?= $this->translate('Check the payment status') ?>" class="btn btn-secondary">
+    </form>
+    <?php if ($this->order->getStatus()->getStatus() == 'waiting payment' || $this->order->getInvoice()[0]->getInvoice()->getStatus()->getStatus() == 'waiting payment') { ?>
+        <form id="itau-form-payment" method="POST" class="itau-payment" ACTION="<?= $this->config->config('itau-shopline-invoice-url') ?>" name="itau-form-payment" target="SHOPLINE">
+            <INPUT TYPE="hidden" NAME="DC" VALUE="<?= $this->itauData ?>">        
+            <INPUT TYPE="submit" name="Shopline" value="<?= $this->translate('Make payment') ?>" class="btn btn-primary">
+        </form>    
+    <?php } ?>
+</div>
+<div class="clearfix"></div>
+<?php if ($this->itauReturn['tipPag'] == '02' && $this->itauReturn['sitPag'] == '04') { ?>
+    <iframe name="SHOPLINE" width="100%" height="1200" frameBorder="0"></iframe>
+<?php } ?>

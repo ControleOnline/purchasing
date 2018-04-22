@@ -1,0 +1,23 @@
+<div id="invoice-tax" data-invoice-tax="<?= $this->carrier_invoice_tax ? $this->carrier_invoice_tax->getId() : '' ?>">
+    <?php if ($this->order->getStatus()->getStatus() == 'waiting retrieve') { ?>
+        <form enctype="multipart/form-data">
+            <input type="hidden" name="order" value="<?= $this->order->getId() ?>">
+            <span class="btn btn-success fileinput-button">
+                <i class="glyphicon glyphicon-plus"></i>
+                <span><?= $this->translate('Select a carrier invoice XML') ?></span>        
+                <input data-success-url="/sales/order/id/<?= $this->order->getId() ?>" data-url="/sales/add-carrier-invoice-tax.json" data-progress-bar=".progress .progress-bar" accept=".xml,.xmlx" class="fileupload" id="upload-danfe" type="file" name="danfe">
+            </span>
+            <div id="progress" class="progress">
+                <div class="progress-bar progress-bar-success"></div>
+            </div>
+        </form>
+    <?php } ?>
+    <?php if ($this->carrier_invoice_tax && $this->carrier_invoice_tax->getInvoice()) { ?>
+        <?php if ($this->carrier_invoice_tax_number) { ?>
+            <h5>
+                <?= $this->translate('Carrier invoice number') ?>: #<?= $this->carrier_invoice_tax_number ?>
+            </h5>
+        <?php } ?>        
+        <iframe src="/vendor/pdf.js/web/viewer.html?zoom=page-width&file=/sales/invoice-tax/id/<?= $this->carrier_invoice_tax->getId() ?>.pdf" class="pdf-container"></iframe>        
+    <?php } ?>            
+</div>
