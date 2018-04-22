@@ -2,7 +2,7 @@
 
 namespace Purchasing\Controller;
 
-use Sales\Model\ShippingModel;
+use Carrier\Model\ShippingModel;
 use Core\Model\ErrorModel;
 use Core\Helper\Format;
 use Carrier\Model\QuoteModel;
